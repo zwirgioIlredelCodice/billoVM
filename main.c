@@ -17,4 +17,6 @@ int main()
     init_billoVM(&vm);
 
     run(&vm, program);
+
+    delate_billoVM(&vm);
 }

@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "billoVM.h"
+#include "ht.h"
 
-void debug_billoVM(billoVM *vm)
+/*void debug_billoVM(billoVM *vm)
 {
 
     printf("accumulator= %d\n", vm->accumulator);
@@ -18,7 +19,7 @@ void debug_billoVM(billoVM *vm)
         printf("%d ", vm->call_stack[i]);
     }
     printf("\n");
-}
+}*/
 
 void init_billoVM(billoVM *vm)
 {
@@ -26,15 +27,17 @@ void init_billoVM(billoVM *vm)
     vm->program_counter = 0;
     vm->call_stack_pointer = 0;
 
-    for (size_t i = 0; i < MEMORY_SIZE; i++)
-    {
-        vm->memory[i] = 0;
-    }
+    vm->memory = ht_create();
 
     for (size_t i = 0; i < CALL_STACK_SIZE; i++)
     {
         vm->call_stack[i] = 0;
     }
+}
+
+void delate_billoVM(billoVM *vm)
+{
+    ht_destroy(vm->memory);
 }
 
 void run(billoVM *vm, code program[])
@@ -47,7 +50,7 @@ void run(billoVM *vm, code program[])
         opcode = program[vm->program_counter].opcode;
         operand = program[vm->program_counter].operand;
 
-        value = vm->memory[operand];
+        value = ht_get(vm->memory, operand);
 
         switch (opcode)
         {
@@ -93,7 +96,7 @@ void run(billoVM *vm, code program[])
             break;
 
         case STORE_MEMORY:
-            vm->memory[operand] = vm->accumulator;
+            ht_set(vm->memory, operand, vm->accumulator);
             (vm->program_counter)++;
             break;
 
@@ -126,6 +129,6 @@ void run(billoVM *vm, code program[])
         case HALT:
             return;
         }
-        debug_billoVM(vm);
+        //debug_billoVM(vm);
     }
 }
