@@ -1,45 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-
-enum opcodes
-{
-    ADDITION,
-    SUBTRACTION,
-    DIVISION,
-    AND,
-    OR,
-    XOR,
-    NOT,
-    LOAD_MEMORY,
-    LOAD_CONSTANT,
-    STORE_MEMORY,
-    JUMP,
-    JUMP_CONDITIONAL,
-    CALL_FUNCTION,
-    RETURN_FUNCTION,
-    PRINT,
-    HALT
-};
-
-#define CALL_STACK_SIZE 10
-#define MEMORY_SIZE 20
-
-typedef struct billoVM
-{
-    int accumulator;
-    size_t program_counter;
-    size_t call_stack_pointer;
-
-    int call_stack[CALL_STACK_SIZE];
-    int memory[MEMORY_SIZE];
-} billoVM;
-
-typedef struct code
-{
-    u_int8_t opcode;
-    int operand;
-} code;
+#include "billoVM.h"
 
 void debug_billoVM(billoVM *vm)
 {
@@ -76,34 +37,17 @@ void init_billoVM(billoVM *vm)
     }
 }
 
-void run(billoVM *vm, code program[], size_t program_size)
+void run(billoVM *vm, code program[])
 {
     int opcode, operand, value;
 
-    while (true)
+    while (1)
     {
-        if (vm->program_counter > program_size)
-        {
-            printf("program counter too big -> EXIT\n");
-            return;
-        }
+
         opcode = program[vm->program_counter].opcode;
         operand = program[vm->program_counter].operand;
 
-        if (vm->call_stack_pointer > CALL_STACK_SIZE)
-        {
-            printf("call stack pointer too big -> EXIT\n");
-            return;
-        }
-
-        if (operand > MEMORY_SIZE)
-        {
-            value = 0;
-        }
-        else
-        {
-            value = vm->memory[operand];
-        }
+        value = vm->memory[operand];
 
         switch (opcode)
         {
@@ -133,7 +77,7 @@ void run(billoVM *vm, code program[], size_t program_size)
             (vm->program_counter)++;
             break;
 
-        case NOT: //safe
+        case NOT:
             vm->accumulator = ~vm->accumulator;
             (vm->program_counter)++;
             break;
@@ -143,7 +87,7 @@ void run(billoVM *vm, code program[], size_t program_size)
             (vm->program_counter)++;
             break;
 
-        case LOAD_CONSTANT: //safe
+        case LOAD_CONSTANT:
             vm->accumulator = operand;
             (vm->program_counter)++;
             break;
@@ -184,22 +128,4 @@ void run(billoVM *vm, code program[], size_t program_size)
         }
         debug_billoVM(vm);
     }
-}
-
-int main()
-{
-    code program[] =
-        {
-            {LOAD_CONSTANT, 5},
-            {STORE_MEMORY, 0},
-            {CALL_FUNCTION, 4},
-            {HALT, 0},
-            {ADDITION, 0},
-            {PRINT, 0},
-            {RETURN_FUNCTION, 0}};
-
-    billoVM vm;
-    init_billoVM(&vm);
-
-    run(&vm, program, 7);
 }
