@@ -1,277 +1,107 @@
-// Simple hash table implemented in C.
-// https://benhoyt.com/writings/hash-table-in-c/
-
+#include <stdio.h>
+#include <stdlib.h>
 #include "ht.h"
 
-#include <assert.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-
-// Hash table entry (slot may be filled or empty).
-typedef struct {
-    const char* key;  // key is NULL if this slot is empty
-    void* value;
-} ht_entry;
-
-// Hash table structure: create with ht_create, free with ht_destroy.
-struct ht {
-    ht_entry* entries;  // hash slots
-    size_t capacity;    // size of _entries array
-    size_t length;      // number of items in hash table
-};
-
-#define INITIAL_CAPACITY 4  // must not be zero
-
-ht* ht_create(void) {
-    // Allocate space for hash table struct.
-    ht* table = malloc(sizeof(ht));
-    if (table == NULL) {
-        return NULL;
-    }
-    table->length = 0;
+ht *ht_create(ht *table)
+{
     table->capacity = INITIAL_CAPACITY;
-
-    // Allocate (zero'd) space for entry buckets.
-    table->entries = calloc(table->capacity, sizeof(ht_entry));
-    if (table->entries == NULL) {
-        free(table); // error, free table before we return!
-        return NULL;
+    table->length = 0;
+    table->cell = malloc(sizeof(ht_cell) * INITIAL_CAPACITY);
+    for (size_t i = 0; i < INITIAL_CAPACITY; i++)
+    {
+        table->cell[i].empty = true;
     }
-    return table;
 }
 
-void ht_destroy(ht* table) {
-    // First free allocated keys.
-    for (size_t i = 0; i < table->capacity; i++) {
-        if (table->entries[i].key != NULL) {
-            free((void*)table->entries[i].key);
-        }
-    }
-
-    // Then free entries array and table itself.
-    free(table->entries);
-    free(table);
+void ht_destroy(ht *table)
+{
+    free(table->cell);
 }
 
-#define FNV_OFFSET 14695981039346656037UL
-#define FNV_PRIME 1099511628211UL
-
-// Return 64-bit FNV-1a hash for key (NUL-terminated). See description:
-// https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
-static uint64_t hash_key(const char* key) {
-    uint64_t hash = FNV_OFFSET;
-    for (const char* p = key; *p; p++) {
-        hash ^= (uint64_t)(unsigned char)(*p);
-        hash *= FNV_PRIME;
-    }
-    return hash;
+size_t hash(size_t key, size_t capacity)
+{
+    return key % capacity;
 }
 
-void* ht_get(ht* table, const char* key) {
-    // AND hash with capacity-1 to ensure it's within entries array.
-    uint64_t hash = hash_key(key);
-    size_t index = (size_t)(hash & (uint64_t)(table->capacity - 1));
+int ht_get(ht *table, size_t key)
+{
+    size_t hash_num = hash(key, table->capacity);
+    size_t index = hash_num;
 
-    // Loop till we find an empty entry.
-    while (table->entries[index].key != NULL) {
-        if (strcmp(key, table->entries[index].key) == 0) {
+    while (!table->cell[index].empty)
+    {
+        if (key == table->cell[index].key)
+        {
             // Found key, return value.
-            return table->entries[index].value;
+            return table->cell[index].value;
         }
         // Key wasn't in this slot, move to next (linear probing).
         index++;
-        if (index >= table->capacity) {
+        if (index >= table->capacity)
+        {
             // At end of entries array, wrap around.
             index = 0;
         }
     }
-    return NULL;
+    return 0;
 }
 
-// Internal function to set an entry (without expanding table).
-static const char* ht_set_entry(ht_entry* entries, size_t capacity,
-        const char* key, void* value, size_t* plength) {
-    // AND hash with capacity-1 to ensure it's within entries array.
-    uint64_t hash = hash_key(key);
-    size_t index = (size_t)(hash & (uint64_t)(capacity - 1));
+void ht_set(ht *table, size_t key, int value)
+{
+    size_t hash_num = hash(key, table->capacity);
+    size_t index = hash_num;
 
-    // Loop till we find an empty entry.
-    while (entries[index].key != NULL) {
-        if (strcmp(key, entries[index].key) == 0) {
+    while (!table->cell[index].empty)
+    {
+        if (key == table->cell[index].key)
+        {
             // Found key (it already exists), update value.
-            entries[index].value = value;
-            return entries[index].key;
+            table->cell[index].value = value;
         }
         // Key wasn't in this slot, move to next (linear probing).
         index++;
-        if (index >= capacity) {
+        if (index >= table->capacity)
+        {
             // At end of entries array, wrap around.
             index = 0;
         }
     }
 
     // Didn't find key, allocate+copy if needed, then insert it.
-    if (plength != NULL) {
-        key = strdup(key);
-        if (key == NULL) {
-            return NULL;
-        }
-        (*plength)++;
-    }
-    entries[index].key = (char*)key;
-    entries[index].value = value;
-    return key;
+    table->cell[index].empty = false;
+    table->cell[index].key = key;
+    table->cell[index].value = value;
 }
 
-// Expand hash table to twice its current size. Return true on success,
-// false if out of memory.
-static bool ht_expand(ht* table) {
-    // Allocate new entries array.
-    size_t new_capacity = table->capacity * 2;
-    if (new_capacity < table->capacity) {
-        return false;  // overflow (capacity would be too big)
-    }
-    ht_entry* new_entries = calloc(new_capacity, sizeof(ht_entry));
-    if (new_entries == NULL) {
-        return false;
-    }
+void ht_delate(ht *table, size_t key)
+{
+    size_t hash_num = hash(key, table->capacity);
+    size_t index = hash_num;
 
-    // Iterate entries, move all non-empty ones to new table's entries.
-    for (size_t i = 0; i < table->capacity; i++) {
-        ht_entry entry = table->entries[i];
-        if (entry.key != NULL) {
-            ht_set_entry(new_entries, new_capacity, entry.key,
-                         entry.value, NULL);
-        }
-    }
-
-    // Free old entries array and update this table's details.
-    free(table->entries);
-    table->entries = new_entries;
-    table->capacity = new_capacity;
-    return true;
-}
-
-const char* ht_set(ht* table, const char* key, void* value) {
-    assert(value != NULL);
-    if (value == NULL) {
-        return NULL;
-    }
-
-    // If length will exceed 3/4 of current capacity, expand it.
-    if (table->length >= (table->capacity / 4) * 3) {
-        if (!ht_expand(table)) {
-            return NULL;
-        }
-    }
-
-    // Set entry and update length.
-    return ht_set_entry(table->entries, table->capacity, key, value,
-                        &table->length);
-}
-
-size_t ht_length(ht* table) {
-    return table->length;
-}
-
-hti ht_iterator(ht* table) {
-    hti it;
-    it._table = table;
-    it._index = 0;
-    return it;
-}
-
-bool ht_next(hti* it) {
-    // Loop till we've hit end of entries array.
-    ht* table = it->_table;
-    while (it->_index < table->capacity) {
-        size_t i = it->_index;
-        it->_index++;
-        if (table->entries[i].key != NULL) {
-            // Found next non-empty item, update iterator key and value.
-            ht_entry entry = table->entries[i];
-            it->key = entry.key;
-            it->value = entry.value;
-            return true;
-        }
-    }
-    return false;
-}
-
-// Internal function to delate an entry (without reducing table).
-void ht_delate_entry(ht_entry* entries, size_t capacity,
-        const char* key, size_t* plength) {
-    // AND hash with capacity-1 to ensure it's within entries array.
-    uint64_t hash = hash_key(key);
-    size_t index = (size_t)(hash & (uint64_t)(capacity - 1));
-
-    // Loop till we find an empty entry.
-    while (entries[index].key != NULL) {
-        if (strcmp(key, entries[index].key) == 0) {
-            // Found key, make pointer key to null(so can use to reinsert key) 
-            // and value null(delate sotored value)
-            entries[index].value = NULL;
-            entries[index].key = NULL;
-            (*plength)--;
-            return;
+    while (!table->cell[index].empty)
+    {
+        if (key == table->cell[index].key)
+        {
+            // Found key, delate value.
+            table->cell[index].value = 0;
+            table->cell[index].empty = true;
         }
         // Key wasn't in this slot, move to next (linear probing).
         index++;
-        if (index >= capacity) {
+        if (index >= table->capacity)
+        {
             // At end of entries array, wrap around.
             index = 0;
         }
     }
 }
 
-// Reduce hash table to half its current size. Return true on success,
-// false if out of memory.
-static bool ht_reduce(ht* table) { //not working
-    // Allocate new entries array.
-    size_t new_capacity = table->capacity / 2;
-    if (new_capacity < INITIAL_CAPACITY) {
-        return true;  // not reduce if new capacity is less than INITIAL_CAPACITY
-    }
-    ht_entry* new_entries = calloc(new_capacity, sizeof(ht_entry));
-    if (new_entries == NULL) {
-        return false;
-    }
-
-    // Iterate entries, move all non-empty ones to new table's entries.
-    for (size_t i = 0; i < table->capacity; i++) {
-        ht_entry entry = table->entries[i];
-        if (entry.key != NULL) {
-            ht_set_entry(new_entries, new_capacity, entry.key,
-                         entry.value, NULL);
-        }
-    }
-
-    // Free old entries array and update this table's details.
-    free(table->entries);
-    table->entries = new_entries;
-    table->capacity = new_capacity;
-    return true;
-}
-
-void ht_delate(ht* table, const char* key) {
-    // If length is less than 1/2 of current capacity, reduce it.
-    if (table->length <= table->capacity / 2) {
-        if (!ht_reduce(table)) {
-            return;
-        }
-    }
-    // Set entry and update length.
-    ht_delate_entry(table->entries, table->capacity, key,
-                        &table->length);
-}
-
-void ht_show(ht* table) {
-    printf("elements=%d\n", table->length);
-    for (size_t i = 0; i < table->capacity; i++)
-    {
-        printf("slot %d key=%s value=%d\n", i, table->entries[i].key, table->entries[i].value);
-    }
-    printf("\n");
+int main()
+{
+    ht table;
+    ht_create(&table);
+    ht_set(&table,2,55);
+    int viva = ht_get(&table, 2);
+    printf("%d", viva);
+    ht_destroy(&table);
 }
