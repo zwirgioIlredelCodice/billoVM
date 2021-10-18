@@ -54,6 +54,7 @@ void ht_resize(ht *table, size_t new_capacity)
     {
         new_cell[i].empty = true;
     }
+
     for (size_t i = 0; i < table->capacity; i++)
     {
         ht_cell cell = table->cell[i];
@@ -101,7 +102,7 @@ void ht_set(ht *table, size_t key, int value)
     // If length will exceed 3/4 of current capacity, expand it.
     if (table->length >= (table->capacity / 4) * 3)
     {
-        ht_resize(table, (table->capacity / 4) * 3);
+        ht_resize(table, (table->capacity * 2));
     }
 
     ht_set_table(table->cell, key, value, table->capacity);
@@ -164,6 +165,8 @@ int main()
     ht_set(&table, 4, 52);
     ht_show(&table);
     ht_set(&table, 5, 51);
+    ht_show(&table);
+    ht_delate(&table, 2);
     ht_show(&table);
     ht_destroy(&table);
 }
