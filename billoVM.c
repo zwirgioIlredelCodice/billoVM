@@ -27,7 +27,7 @@ void init_billoVM(billoVM *vm)
     vm->program_counter = 0;
     vm->call_stack_pointer = 0;
 
-    vm->memory = ht_create();
+    ht_create(&vm->memory);
 
     for (size_t i = 0; i < CALL_STACK_SIZE; i++)
     {
@@ -37,7 +37,7 @@ void init_billoVM(billoVM *vm)
 
 void delate_billoVM(billoVM *vm)
 {
-    ht_destroy(vm->memory);
+    ht_destroy(&vm->memory);
 }
 
 void run(billoVM *vm, code program[])
@@ -50,7 +50,7 @@ void run(billoVM *vm, code program[])
         opcode = program[vm->program_counter].opcode;
         operand = program[vm->program_counter].operand;
 
-        value = ht_get(vm->memory, operand);
+        value = ht_get(&vm->memory, operand);
 
         switch (opcode)
         {
@@ -96,7 +96,7 @@ void run(billoVM *vm, code program[])
             break;
 
         case STORE_MEMORY:
-            ht_set(vm->memory, operand, vm->accumulator);
+            ht_set(&vm->memory, operand, vm->accumulator);
             (vm->program_counter)++;
             break;
 

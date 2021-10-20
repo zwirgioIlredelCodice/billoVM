@@ -11,7 +11,8 @@ int main()
             {HALT, 0},
             {ADDITION, 0},
             {PRINT, 0},
-            {RETURN_FUNCTION, 0}};
+            {RETURN_FUNCTION, 0}
+        };
 
     billoVM vm;
     init_billoVM(&vm);

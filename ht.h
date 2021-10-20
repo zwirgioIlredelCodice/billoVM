@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#define INITIAL_CAPACITY 4
+#define INITIAL_CAPACITY 20
 
 typedef struct ht_cell
 {

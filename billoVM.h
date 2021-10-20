@@ -32,7 +32,7 @@ typedef struct billoVM
     size_t call_stack_pointer;
 
     int call_stack[CALL_STACK_SIZE];
-    ht* memory;
+    ht memory;
 } billoVM;
 
 typedef struct code

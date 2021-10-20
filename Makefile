@@ -1,17 +1,18 @@
-main: main.o billoVM.o ht.o
-	gcc main.o billoVM.o ht.o -o main
+build/main: build/main.o build/billoVM.o build/ht.o
+	gcc build/main.o build/billoVM.o build/ht.o -o build/main
 
-main.o: main.c
-	gcc -c -O main.c -o main.o
+build/main.o: main.c
+	gcc -c -O main.c -o build/main.o
 
-billoVM.o: billoVM.c billoVM.h
-	gcc -c -O billoVM.c -o billoVM.o
+build/billoVM.o: billoVM.c billoVM.h
+	gcc -c -O billoVM.c -o build/billoVM.o
 
-ht.o: ht.c ht.h
-	gcc -c -O ht.c -o ht.o
+build/ht.o: ht.c ht.h
+	gcc -c -O ht.c -o build/ht.o
 
 run:
-	./main
+	@echo running my great billo
+	./build/main
 
 clean:
-	rm main *.o
+	rm build/main build/*.o

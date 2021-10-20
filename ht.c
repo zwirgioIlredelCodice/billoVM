@@ -48,6 +48,11 @@ int ht_get(ht *table, size_t key)
 
 void ht_resize(ht *table, size_t new_capacity)
 {
+    if (new_capacity <= INITIAL_CAPACITY)
+    {
+        return;
+    }
+
     ht_cell *new_cell = malloc(sizeof(ht_cell) * new_capacity);
 
     for (size_t i = 0; i < new_capacity; i++)
@@ -112,9 +117,9 @@ void ht_set(ht *table, size_t key, int value)
 void ht_delate(ht *table, size_t key)
 {
     // If length is less than 1/2 of current capacity, reduce it.
-    if (table->length <= table->capacity / 2)
+    if (table->length <= table->capacity / 2 )
     {
-        ht_resize(table, table->capacity / 2);
+        ht_resize(table, (table->capacity / 4) * 3);
     }
 
     size_t hash_num = hash(key, table->capacity);
@@ -141,7 +146,7 @@ void ht_delate(ht *table, size_t key)
 
 void ht_show(ht *table)
 {
-    printf("elements=%d\n", table->length);
+    printf("size=%d, elements=%d\n", table->capacity, table->length);
     for (size_t i = 0; i < table->capacity; i++)
     {
         if (table->cell[i].empty)
@@ -154,19 +159,4 @@ void ht_show(ht *table)
         }
     }
     printf("\n");
-}
-
-int main()
-{
-    ht table;
-    ht_create(&table);
-    ht_set(&table, 2, 54);
-    ht_set(&table, 3, 53);
-    ht_set(&table, 4, 52);
-    ht_show(&table);
-    ht_set(&table, 5, 51);
-    ht_show(&table);
-    ht_delate(&table, 2);
-    ht_show(&table);
-    ht_destroy(&table);
 }
