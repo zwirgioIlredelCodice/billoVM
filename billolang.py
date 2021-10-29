@@ -1,6 +1,7 @@
 # calclex.py
 
 from sly import Lexer
+from sly import Parser
 
 class CalcLexer(Lexer):
     # Set of token names.   This is always required
@@ -54,6 +55,44 @@ class CalcLexer(Lexer):
         print('Line %d: Bad character %r' % (self.lineno, t.value[0]))
         self.index += 1
 
+
+class CalcParser(Parser):
+    # Get the token list from the lexer (required)
+    tokens = CalcLexer.tokens
+
+    # Grammar rules and actions
+    @_('expr PLUS term')
+    def expr(self, p):
+        return p.expr + p.term
+
+    @_('expr MINUS term')
+    def expr(self, p):
+        return p.expr - p.term
+
+    @_('term')
+    def expr(self, p):
+        return p.term
+
+    @_('term TIMES factor')
+    def term(self, p):
+        return p.term * p.factor
+
+    @_('term DIVIDE factor')
+    def term(self, p):
+        return p.term / p.factor
+
+    @_('factor')
+    def term(self, p):
+        return p.factor
+
+    @_('NUMBER')
+    def factor(self, p):
+        return p.NUMBER
+
+    @_('LPAREN expr RPAREN')
+    def factor(self, p):
+        return p.expr
+
 if __name__ == '__main__':
     data = '''# Counting
 var x ->
@@ -64,5 +103,10 @@ var x ->
 )
 '''
     lexer = CalcLexer()
-    for tok in lexer.tokenize(data):
+    token = lexer.tokenize(data)
+
+    for tok in token:
         print(tok)
+    
+    parser = CalcParser()
+    print(parser.parse(token))
