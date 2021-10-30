@@ -1,11 +1,3 @@
-( function fun1 x y -->
-    = z ( + x y ) ->
-    return z
-)
-
-( function main -->
-    = x 2 ->
-    = y 6 ->
-    = z ( fun1 x y ) ->
-    print z
-)
+var i ->
+var y ->
+= i 55 y
