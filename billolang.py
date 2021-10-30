@@ -15,13 +15,12 @@ def print_token(token_list):
     for i in range(len(token_list)):
         print("type", token_list[i].kind, "value ", token_list[i].value)
 
+keyword = ["var", "if"]
+operation = ["=", "+", "-", "*", "/"]
+arrow = "->"
 
 def tokenize(data):
     token_list = []
-
-    keyword = ["var", "if"]
-    operation = ["=", "+", "-", "*", "/"]
-    arrow = "->"
 
     # split string into token when "\n" " " "\t"
     token_value = data.split()
@@ -63,9 +62,26 @@ def tokenize(data):
     
     return token_list
 
+def traduce(token_list):
+    i = 0
+    while i < len(token_list):
+        if token_list[i].kind == "t_operation":
+            if token_list[i].value == "+":
+                instruction = "add"
+                i = i+1
+                while token_list[i].kind == "t_variable" or token_list[i].kind == "t_number":
+                    print(instruction, token_list[i].value)  
+                    i = i+1     
+        else:
+            i = i+1
+        print(i)
+
+                
+
 
 # read from file
 data = read_file("one.billo")
 token_list = tokenize(data)
-
 print_token(token_list)
+print("sasadsdas traduce")
+traduce(token_list)
