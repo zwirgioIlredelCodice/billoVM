@@ -1,4 +1,3 @@
-
 def read_file(file):
     f = open(file, "r")
     data = f.read()
