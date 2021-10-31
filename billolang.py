@@ -13,13 +13,16 @@ class token:
 
 def print_token(token_list):
     for i in range(len(token_list)):
-        print("type", token_list[i].kind, "value ", token_list[i].value)
+        print("token[kind = ", token_list[i].kind, "] [value = ", token_list[i].value, "]")
 
 keyword = ["var", "if"]
 operation = ["=", "+", "-", "*", "/"]
 arrow = "->"
 
 def tokenize(data):
+
+    error = 0
+
     token_list = []
 
     # split string into token when "\n" " " "\t"
@@ -60,28 +63,49 @@ def tokenize(data):
                 if token_list[y].kind == "t_?" and token_list[y].value == new_variable:
                     token_list[y].kind = "t_variable"
     
-    return token_list
+    for tok in token_list:
+        if tok.kind == "t_?":
+            print("ERROR token without a kind with value ",tok.value)
+            error = error + 1
+    if error > 0:
+        return -1
+    else:
+        return token_list
 
 def traduce(token_list):
-    i = 0
-    while i < len(token_list):
-        if token_list[i].kind == "t_operation":
-            if token_list[i].value == "+":
-                instruction = "add"
-                i = i+1
-                while token_list[i].kind == "t_variable" or token_list[i].kind == "t_number":
-                    print(instruction, token_list[i].value)  
-                    i = i+1     
+
+    token_line = []
+
+    for tok in token_list:
+
+        if tok.kind != "t_arrow":
+            token_line.append(tok)
+
         else:
-            i = i+1
-        print(i)
-
-                
-
+            #print_token(token_line)
+            key_line = token_line[0] # key_line is keyword
+            token_line.pop(0) #pop it form key_line
+            if key_line.kind != "t_keyword" and key_line.kind != "t_operation":
+                print("ERROR token with value ",key_line.value," after -> must be a keyword")
+                return -1
+            else:
+                for ttok in token_line:
+                    print(key_line.value, ttok.value)
+            token_line = []
 
 # read from file
-data = read_file("one.billo")
-token_list = tokenize(data)
-print_token(token_list)
-print("sasadsdas traduce")
-traduce(token_list)
+name_file = "one.billo"
+data = read_file(name_file)
+if data != "": #if is not empty
+    token_list = tokenize(data)
+    print_token(token_list)
+
+    if token_list != -1: #if tokenize() return no errors
+        print("\n\n##############sasadsdas traduce\n\n")
+        traduce(token_list)
+
+    else:
+        print("error EXIT")
+
+else:
+    print("file ", name_file, "empty EXIT")
