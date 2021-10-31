@@ -11,12 +11,13 @@ class token:
         self.value = value
 
 
-def print_token(token_list):
-    if type(token_list) == int:
-        print("[empty]")
-    else:
-        for tok in token_list:
-            print("token[kind = ", tok.kind, "] [value = ", tok.value, "]")
+def print_token(token_list_line):
+    line_n = 0
+    for line_tok in token_list_line:
+        print("line ", line_n)
+        for tok in line_tok:
+            print("\ttoken[kind = ", tok.kind, ", variable = ", tok.value,"]")
+        line_n = line_n + 1
 
 keyword = ["var", "if"]
 operation = ["=", "+", "-", "*", "/"]
@@ -54,7 +55,7 @@ def tokenize(data):
         else:
             i.kind = "t_?"
 
-    # find what token is p2 recognise variable
+    # p2 make list line
 
     token_list_line = []
     token_line = []
@@ -68,65 +69,24 @@ def tokenize(data):
             token_list_line.append(token_line)
             token_line = []
     
-    token_line = []
-    previous_line_i = [0]
-    for i in range(len(token_list)):
+    return token_list_line
 
-        
-        if token_list[i].kind != "t_arrow":
-            token_line.append(token_list[i])
-
-        else:
-            previous_line_i.append(i)
-            first_token = token_line[0] # token_line is keyword
-            token_line.pop(0) #pop fist element form token_line
-
-            if first_token.kind == "t_keyword" and first_token.value == "var":
-                for ii in range(previous_line_i[-2], len(token_list)):
-                    if token_list[ii].kind == "t_?" and token_list[ii].value in token_line:
-                        token_list[ii].kind == "t_variable"
-            token_line = []
-    
-    for tok in token_list:
-        if tok.kind == "t_?":
-            print("ERROR token without a kind with value ",tok.value)
-            error = error + 1
-    if error > 0:
-        return -1
-    else:
-        return token_list
-
-def traduce(token_list):
-
-    token_line = []
-
-    for tok in token_list:
-
-        if tok.kind != "t_arrow":
-            token_line.append(tok)
-
-        else:
-            #print_token(token_line)
-            key_line = token_line[0] # key_line is keyword
-            token_line.pop(0) #pop it form key_line
-            """if key_line.kind != "t_keyword" and key_line.kind != "t_operation":
-                print("ERROR token with value ",key_line.value," after -> must be a keyword")
-                return -1
-            else:"""
-            for ttok in token_line:
-                print(key_line.value, ttok.value)
-            token_line = []
+def traduce(token_list_line):
+    for line_tok in token_list_line:
+        keyword_startline = line_tok[0].value
+        for tok in line_tok[1:]:
+            print(keyword_startline, tok.value)
 
 # read from file
 name_file = "one.billo"
 data = read_file(name_file)
 if data != "": #if is not empty
-    token_list = tokenize(data)
-    print_token(token_list)
+    token_list_line = tokenize(data)
+    print_token(token_list_line)
 
-    if token_list != -1: #if tokenize() return no errors
-        print("\n\n##############sasadsdas traduce\n\n")
-        traduce(token_list)
+    if token_list_line != -1: #if tokenize() return no errors
+        print("\nTRADUCE\n")
+        traduce(token_list_line)
 
     else:
         print("error EXIT")
