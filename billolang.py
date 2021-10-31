@@ -12,8 +12,11 @@ class token:
 
 
 def print_token(token_list):
-    for i in range(len(token_list)):
-        print("token[kind = ", token_list[i].kind, "] [value = ", token_list[i].value, "]")
+    if type(token_list) == int:
+        print("[empty]")
+    else:
+        for tok in token_list:
+            print("token[kind = ", tok.kind, "] [value = ", tok.value, "]")
 
 keyword = ["var", "if"]
 operation = ["=", "+", "-", "*", "/"]
@@ -52,16 +55,37 @@ def tokenize(data):
             i.kind = "t_?"
 
     # find what token is p2 recognise variable
-        number_token = len(token_list)
 
-    for i in range(number_token):
-        if token_list[i].kind == "t_keyword" and token_list[i].value == "var":
-            new_variable = token_list[i+1].value  # variable name
+    token_list_line = []
+    token_line = []
 
-            # change all token after with type t_? with t_variable if is recognised t_variable = new_variable
-            for y in range(i+1, number_token):
-                if token_list[y].kind == "t_?" and token_list[y].value == new_variable:
-                    token_list[y].kind = "t_variable"
+    for tok in token_list:
+
+        if tok.kind != "t_arrow":
+            token_line.append(tok)
+
+        else:
+            token_list_line.append(token_line)
+            token_line = []
+    
+    token_line = []
+    previous_line_i = [0]
+    for i in range(len(token_list)):
+
+        
+        if token_list[i].kind != "t_arrow":
+            token_line.append(token_list[i])
+
+        else:
+            previous_line_i.append(i)
+            first_token = token_line[0] # token_line is keyword
+            token_line.pop(0) #pop fist element form token_line
+
+            if first_token.kind == "t_keyword" and first_token.value == "var":
+                for ii in range(previous_line_i[-2], len(token_list)):
+                    if token_list[ii].kind == "t_?" and token_list[ii].value in token_line:
+                        token_list[ii].kind == "t_variable"
+            token_line = []
     
     for tok in token_list:
         if tok.kind == "t_?":
@@ -85,12 +109,12 @@ def traduce(token_list):
             #print_token(token_line)
             key_line = token_line[0] # key_line is keyword
             token_line.pop(0) #pop it form key_line
-            if key_line.kind != "t_keyword" and key_line.kind != "t_operation":
+            """if key_line.kind != "t_keyword" and key_line.kind != "t_operation":
                 print("ERROR token with value ",key_line.value," after -> must be a keyword")
                 return -1
-            else:
-                for ttok in token_line:
-                    print(key_line.value, ttok.value)
+            else:"""
+            for ttok in token_line:
+                print(key_line.value, ttok.value)
             token_line = []
 
 # read from file
