@@ -1,2 +1,6 @@
-var i y ->
-+ i 55 y -> + 34 223 ->
+if -> < 2 4 -> do ->
+    print 666 ->
+    if -> == 44 55 -> do ->
+        print 777 ->
+    end ->
+end ->

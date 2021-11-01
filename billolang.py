@@ -1,9 +1,16 @@
+RED   = "\033[1;31m"  
+BLUE  = "\033[1;34m"
+CYAN  = "\033[1;36m"
+GREEN = "\033[0;32m"
+RESET = "\033[0;0m"
+BOLD    = "\033[;1m"
+REVERSE = "\033[;7m"
+
 def read_file(file):
     f = open(file, "r")
     data = f.read()
     f.close()
     return data
-
 
 class token:
     def __init__(self, kind, value):
@@ -72,10 +79,23 @@ def tokenize(data):
     return token_list_line
 
 def traduce(token_list_line):
+
+    control_flow_stack = [] #stack containing if, for, while statment open
+ 
     for line_tok in token_list_line:
         keyword_startline = line_tok[0].value
-        for tok in line_tok[1:]:
-            print(keyword_startline, tok.value)
+        if keyword_startline == "if":
+            control_flow_stack.append("if")
+            print(RED,"=OPEN= statment",len(control_flow_stack),RESET)
+        elif keyword_startline == "do":
+            print(GREEN,"if register is false jump *close* statment",len(control_flow_stack),RESET)
+        elif keyword_startline == "end":
+            print(RED,"=CLOSE= statment",len(control_flow_stack),RESET)
+            control_flow_stack.pop()
+        #base case
+        else:
+            for tok in line_tok[1:]:
+                print(keyword_startline, tok.value)
 
 # read from file
 name_file = "one.billo"
