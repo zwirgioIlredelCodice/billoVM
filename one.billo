@@ -9,3 +9,9 @@ while -> < i 3 -> do ->
     + i 1 ->
     = i ->
 end ->
+
+if -> < i 545 -> do ->
+    print 12 ->
+end else ->
+    print 909 ->
+end ->

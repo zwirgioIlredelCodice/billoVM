@@ -17,6 +17,11 @@ class token:
         self.kind = kind
         self.value = value
 
+class control_flow:
+    def __init__(self, kind, number):
+        self.kind = kind
+        self.number = number
+
 
 def print_token(token_list_line):
     line_n = 0
@@ -81,31 +86,49 @@ def tokenize(data):
 def traduce(token_list_line):
 
     control_flow_stack = [] #stack containing if, for, while statment open
+    control_flow_number = 0
  
     for line_tok in token_list_line:
 
         keyword_startline = line_tok[0].value
 
         if keyword_startline == "if":
-            control_flow_stack.append("if")
-            print(RED,"\t=OPEN= statment",len(control_flow_stack),RESET)
+
+            control_flow_number = control_flow_number + 1
+
+            control_flow_stack.append(control_flow("if", control_flow_number))
+            print(RED,"\t=OPEN= statment",control_flow_stack[-1].number, "type",control_flow_stack[-1].kind ,RESET)
 
         elif keyword_startline == "while":
-            control_flow_stack.append("while")
-            print(RED,"\t=OPEN= statment",len(control_flow_stack),RESET)
+
+            control_flow_number = control_flow_number + 1
+
+            control_flow_stack.append(control_flow("while", control_flow_number))
+            print(RED,"\t=OPEN= statment",control_flow_stack[-1].number, "type",control_flow_stack[-1].kind ,RESET)
 
         elif keyword_startline == "do":
-            print(GREEN,"\tif register is false jump *CLOSE* statment",len(control_flow_stack),RESET)
+            print(GREEN,"\tif register is false jump *CLOSE* statment",control_flow_stack[-1].number, "type",control_flow_stack[-1].kind ,RESET)
     
         elif keyword_startline == "end":
-                if control_flow_stack[-1] == "if":
-                    print(RED,"\t=CLOSE= statment",len(control_flow_stack),RESET)
+
+                if control_flow_stack[-1].kind == "while":
+                     print(GREEN,"\tjump *OPEN* statment",control_flow_stack[-1].number, "type",control_flow_stack[-1].kind ,RESET)
+                     print(RED,"\t=CLOSE= statment",control_flow_stack[-1].number, "type",control_flow_stack[-1].kind ,RESET)
+                     control_flow_stack.pop()
                 
-                elif control_flow_stack[-1] == "while":
-                     print(GREEN,"\tjump *OPEN* statment",len(control_flow_stack),RESET)
-                     print(RED,"\t=CLOSE= statment",len(control_flow_stack),RESET)
-                
-                control_flow_stack.pop()
+                elif len(line_tok) > 1 and line_tok[1].value == "else":
+                    control_flow_stack.pop()
+
+                    control_flow_number = control_flow_number + 1
+
+                    control_flow_stack.append(control_flow("else", control_flow_number))
+                    print(GREEN,"\tjump *OPEN* statment",control_flow_stack[-1].number, "type",control_flow_stack[-1].kind ,RESET)
+                    print(RED,"\t=OPEN= statment",control_flow_stack[-1].number, "type",control_flow_stack[-1].kind ,RESET)
+                    
+                else:
+                    print(RED,"\t=CLOSE= statment",control_flow_stack[-1].number, "type",control_flow_stack[-1].kind ,RESET)
+                    control_flow_stack.pop()
+
         #base case
         else:
             for tok in line_tok[1:]:
