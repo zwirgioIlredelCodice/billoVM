@@ -83,15 +83,29 @@ def traduce(token_list_line):
     control_flow_stack = [] #stack containing if, for, while statment open
  
     for line_tok in token_list_line:
+
         keyword_startline = line_tok[0].value
+
         if keyword_startline == "if":
             control_flow_stack.append("if")
-            print(RED,"=OPEN= statment",len(control_flow_stack),RESET)
+            print(RED,"\t=OPEN= statment",len(control_flow_stack),RESET)
+
+        elif keyword_startline == "while":
+            control_flow_stack.append("while")
+            print(RED,"\t=OPEN= statment",len(control_flow_stack),RESET)
+
         elif keyword_startline == "do":
-            print(GREEN,"if register is false jump *close* statment",len(control_flow_stack),RESET)
+            print(GREEN,"\tif register is false jump *CLOSE* statment",len(control_flow_stack),RESET)
+    
         elif keyword_startline == "end":
-            print(RED,"=CLOSE= statment",len(control_flow_stack),RESET)
-            control_flow_stack.pop()
+                if control_flow_stack[-1] == "if":
+                    print(RED,"\t=CLOSE= statment",len(control_flow_stack),RESET)
+                
+                elif control_flow_stack[-1] == "while":
+                     print(GREEN,"\tjump *OPEN* statment",len(control_flow_stack),RESET)
+                     print(RED,"\t=CLOSE= statment",len(control_flow_stack),RESET)
+                
+                control_flow_stack.pop()
         #base case
         else:
             for tok in line_tok[1:]:

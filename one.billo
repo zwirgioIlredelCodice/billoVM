@@ -4,3 +4,8 @@ if -> < 2 4 -> do ->
         print 777 ->
     end ->
 end ->
+
+while -> < i 3 -> do ->
+    + i 1 ->
+    = i ->
+end ->
