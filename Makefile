@@ -4,7 +4,7 @@ build/main: build/main.o build/billoVM.o build/ht.o
 build/main.o: main.c
 	gcc -c -O main.c -o build/main.o
 
-build/billoVM.o: billoVM.c billoVM.h
+build/billoVM.o: billoVM.c billoVM.h ht.h
 	gcc -c -O billoVM.c -o build/billoVM.o
 
 build/ht.o: ht.c ht.h

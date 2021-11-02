@@ -12,6 +12,6 @@ end ->
 
 if -> < i 545 -> do ->
     print 12 ->
-end else ->
+end else do ->
     print 909 ->
 end ->
