@@ -1,16 +1,15 @@
-if -> < 2 4 -> do ->
+if -> 0 -> not 1 -> do ->
     print 666 ->
-    if -> == 44 55 -> do ->
+    if -> 0 -> + 1 -> do ->
         print 777 ->
     end ->
 end ->
 
-while -> < i 3 -> do ->
+while -> 0 -> * 2 3 -> do ->
     + i 1 ->
-    = i ->
 end ->
 
-if -> < i 545 -> do ->
+if -> 0 -> or 1 0 -> do ->
     print 12 ->
 end else do ->
     print 909 ->
