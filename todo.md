@@ -1,2 +1,2 @@
-## finish 
-at file billolang.py line 170
+## sto codice è una discarica
+metterlo a posto

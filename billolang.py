@@ -54,7 +54,8 @@ class Instruction:
     def __init__(self, opcode, operand):
         self.opcode = opcode
         self.operand = operand
-        pass
+        self.open_here_control_flow = []
+        self.closed_here_control_flow = []
 
 
 def print_token(token_list_line):
@@ -120,8 +121,6 @@ def tokenize(data):
 def traduce(token_list_line):
 
     control_flow_stack = [] #stack containing if, for, while statment open
-    control_flow_stack_pos = []
-    control_flow_number = 0
     opcode = ""
     program = []
     instruction_n = 0
@@ -158,17 +157,21 @@ def traduce(token_list_line):
 
             control_flow_stack.append(control_flow("if", instruction_n))
             print(RED,"\t=OPEN= statment",control_flow_stack[-1].position, "type",control_flow_stack[-1].kind ,RESET)
+            program[-1].open_here_control_flow.append("o@"+str(control_flow_stack[-1].position))
 
         elif keyword_startline == "while":
 
             control_flow_stack.append(control_flow("while", instruction_n))
             print(RED,"\t=OPEN= statment",control_flow_stack[-1].position, "type",control_flow_stack[-1].kind ,RESET)
+            program[-1].open_here_control_flow.append("o@"+str(control_flow_stack[-1].position))
 
         elif keyword_startline == "do":
             print(GREEN,"\tif register is false jump *CLOSE* statment",control_flow_stack[-1].position, "type",control_flow_stack[-1].kind ,RESET)
+
             opcode = "JUMP_CONDITIONAL"
-            operand = "close statment @"+str(control_flow_stack[-1].position) # is not right todo: after make code all instruction chage @.. value with right ones
+            operand = "c@"+str(control_flow_stack[-1].position) # is not right todo: after make code all instruction chage @.. value with right ones
             print(GREEN,instruction_n, opcode, operand, RESET)
+            program.append(Instruction(opcode, operand))
             instruction_n += 1
     
         elif keyword_startline == "end":
@@ -176,28 +179,34 @@ def traduce(token_list_line):
                 if control_flow_stack[-1].kind == "while":
                     print(GREEN,"\tjump *OPEN* statment",control_flow_stack[-1].position, "type",control_flow_stack[-1].kind ,RESET)
                     opcode = "JUMP"
-                    operand = control_flow_stack[-1].position
+                    operand = "o@"+str(control_flow_stack[-1].position)
                     print(GREEN,instruction_n, opcode, operand, RESET)
+                    program.append(Instruction(opcode, operand))
                     instruction_n += 1
                     print(RED,"\t=CLOSE= statment",control_flow_stack[-1].position, "type",control_flow_stack[-1].kind ,RESET)
+                    program[-1].closed_here_control_flow.append("c@"+str(control_flow_stack[-1].position))
+
                     control_flow_stack.pop()
                 
                 elif len(line_tok) > 1 and line_tok[1].value == "else":
 
                     control_flow_temp = control_flow_stack.pop()
-                    control_flow_number = control_flow_number + 1
 
                     control_flow_stack.append(control_flow("else", instruction_n))
                     print(GREEN,"\tjump *CLOSE* statment",control_flow_stack[-1].position, "type",control_flow_stack[-1].kind ,RESET)
                     opcode = "JUMP"
-                    operand = control_flow_stack[-1].position
+                    operand = "c@"+str(control_flow_stack[-1].position)
                     print(GREEN,instruction_n, opcode, operand, RESET)
+                    program.append(Instruction(opcode, operand))
                     instruction_n += 1
                     print(RED,"\t=CLOSE= statment",control_flow_temp.position, "type",control_flow_temp.kind ,RESET)
+                    program[-1].closed_here_control_flow.append("c@"+str(control_flow_stack[-1].position))
                     print(RED,"\t=OPEN= statment",control_flow_stack[-1].position, "type",control_flow_stack[-1].kind ,RESET)
+                    program[-1].open_here_control_flow.append("o@"+str(control_flow_stack[-1].position))
                     
                 else:
                     print(RED,"\t=CLOSE= statment",control_flow_stack[-1].position, "type",control_flow_stack[-1].kind ,RESET)
+                    program[-1].closed_here_control_flow.append("c@"+str(control_flow_stack[-1].position))
                     control_flow_stack.pop()
 
         #base case
@@ -207,6 +216,13 @@ def traduce(token_list_line):
                 program.append(Instruction(opcode, tok.value))
                 print(instruction_n, opcode, tok.value)
                 instruction_n += 1
+    
+    i = 0
+    for instruction in program:
+        print(i, instruction.opcode, instruction.operand, 
+            instruction.open_here_control_flow,
+            instruction.closed_here_control_flow)
+        i += 1
 
 def to_bytecode(code):
     size_int = 2 # 2 byte make a c int

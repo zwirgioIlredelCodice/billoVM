@@ -2,5 +2,5 @@
 *.o
 *.bbillo
 main
-.vscode/**
-build/**
+.vscode/*
+build/

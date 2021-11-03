@@ -1,0 +1,149 @@
+line  0
+	token[kind =  t_number , variable =  1 ]
+line  1
+	token[kind =  t_number , variable =  2 ]
+line  2
+	token[kind =  t_number , variable =  3 ]
+line  3
+	token[kind =  t_keyword , variable =  if ]
+line  4
+	token[kind =  t_number , variable =  0 ]
+line  5
+	token[kind =  t_operation , variable =  not ]
+	token[kind =  t_number , variable =  1 ]
+line  6
+	token[kind =  t_? , variable =  do ]
+line  7
+	token[kind =  t_? , variable =  print ]
+	token[kind =  t_number , variable =  666 ]
+line  8
+	token[kind =  t_keyword , variable =  if ]
+line  9
+	token[kind =  t_number , variable =  0 ]
+line  10
+	token[kind =  t_operation , variable =  + ]
+	token[kind =  t_number , variable =  1 ]
+line  11
+	token[kind =  t_? , variable =  do ]
+line  12
+	token[kind =  t_? , variable =  print ]
+	token[kind =  t_number , variable =  777 ]
+line  13
+	token[kind =  t_? , variable =  end ]
+line  14
+	token[kind =  t_? , variable =  end ]
+line  15
+	token[kind =  t_? , variable =  while ]
+line  16
+	token[kind =  t_number , variable =  0 ]
+line  17
+	token[kind =  t_operation , variable =  * ]
+	token[kind =  t_number , variable =  2 ]
+	token[kind =  t_number , variable =  3 ]
+line  18
+	token[kind =  t_? , variable =  do ]
+line  19
+	token[kind =  t_operation , variable =  + ]
+	token[kind =  t_? , variable =  i ]
+	token[kind =  t_number , variable =  1 ]
+line  20
+	token[kind =  t_? , variable =  end ]
+line  21
+	token[kind =  t_keyword , variable =  if ]
+line  22
+	token[kind =  t_number , variable =  0 ]
+line  23
+	token[kind =  t_operation , variable =  or ]
+	token[kind =  t_number , variable =  1 ]
+	token[kind =  t_number , variable =  0 ]
+line  24
+	token[kind =  t_? , variable =  do ]
+line  25
+	token[kind =  t_? , variable =  print ]
+	token[kind =  t_number , variable =  12 ]
+line  26
+	token[kind =  t_? , variable =  end ]
+	token[kind =  t_? , variable =  else ]
+	token[kind =  t_? , variable =  do ]
+line  27
+	token[kind =  t_? , variable =  print ]
+	token[kind =  t_number , variable =  909 ]
+line  28
+	token[kind =  t_? , variable =  end ]
+
+TRADUCE
+
+0 LOAD_C 1
+1 LOAD_C 2
+2 LOAD_C 3
+[1;31m 	=OPEN= statment 3 type if [0;0m
+3 LOAD_C 0
+4 NOT_C 1
+[0;32m 	if register is false jump *CLOSE* statment 3 type if [0;0m
+[0;32m 5 JUMP_CONDITIONAL c@3 [0;0m
+6 LOAD_C print
+7 LOAD_C 666
+[1;31m 	=OPEN= statment 8 type if [0;0m
+8 LOAD_C 0
+9 ADDITION_C 1
+[0;32m 	if register is false jump *CLOSE* statment 8 type if [0;0m
+[0;32m 10 JUMP_CONDITIONAL c@8 [0;0m
+11 LOAD_C print
+12 LOAD_C 777
+[1;31m 	=CLOSE= statment 8 type if [0;0m
+[1;31m 	=CLOSE= statment 3 type if [0;0m
+[1;31m 	=OPEN= statment 13 type while [0;0m
+13 LOAD_C 0
+14 MULTIPLICATION_C 2
+15 MULTIPLICATION_C 3
+[0;32m 	if register is false jump *CLOSE* statment 13 type while [0;0m
+[0;32m 16 JUMP_CONDITIONAL c@13 [0;0m
+17 ADDITION_C i
+18 ADDITION_C 1
+[0;32m 	jump *OPEN* statment 13 type while [0;0m
+[0;32m 19 JUMP o@13 [0;0m
+[1;31m 	=CLOSE= statment 13 type while [0;0m
+[1;31m 	=OPEN= statment 20 type if [0;0m
+20 LOAD_C 0
+21 OR_C 1
+22 OR_C 0
+[0;32m 	if register is false jump *CLOSE* statment 20 type if [0;0m
+[0;32m 23 JUMP_CONDITIONAL c@20 [0;0m
+24 LOAD_C print
+25 LOAD_C 12
+[0;32m 	jump *CLOSE* statment 26 type else [0;0m
+[0;32m 26 JUMP c@26 [0;0m
+[1;31m 	=CLOSE= statment 20 type if [0;0m
+[1;31m 	=OPEN= statment 26 type else [0;0m
+27 LOAD_C print
+28 LOAD_C 909
+[1;31m 	=CLOSE= statment 26 type else [0;0m
+0 LOAD_C 1 [] []
+1 LOAD_C 2 [] []
+2 LOAD_C 3 ['o@3'] []
+3 LOAD_C 0 [] []
+4 NOT_C 1 [] []
+5 JUMP_CONDITIONAL c@3 [] []
+6 LOAD_C print [] []
+7 LOAD_C 666 ['o@8'] []
+8 LOAD_C 0 [] []
+9 ADDITION_C 1 [] []
+10 JUMP_CONDITIONAL c@8 [] []
+11 LOAD_C print [] []
+12 LOAD_C 777 ['o@13'] ['c@8', 'c@3']
+13 LOAD_C 0 [] []
+14 MULTIPLICATION_C 2 [] []
+15 MULTIPLICATION_C 3 [] []
+16 JUMP_CONDITIONAL c@13 [] []
+17 ADDITION_C i [] []
+18 ADDITION_C 1 [] []
+19 JUMP o@13 ['o@20'] ['c@13']
+20 LOAD_C 0 [] []
+21 OR_C 1 [] []
+22 OR_C 0 [] []
+23 JUMP_CONDITIONAL c@20 [] []
+24 LOAD_C print [] []
+25 LOAD_C 12 [] []
+26 JUMP c@26 ['o@26'] ['c@26']
+27 LOAD_C print [] []
+28 LOAD_C 909 [] ['c@26']
