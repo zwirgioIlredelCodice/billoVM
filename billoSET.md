@@ -28,7 +28,7 @@ code =  |=========================|
 ```
 
 
-OPCODE_C for costant
+OPCODE_C for constant
 
 OPCODE | DESCRIPTION | EXAMPLE
 ------ | ----------- | -------
