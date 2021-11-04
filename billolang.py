@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+# if not working chmod +x billolang.py
 
 #           DECLARING TERMINAL
 #           COLOR 
