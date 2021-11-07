@@ -5,6 +5,15 @@
 
 enum opcodes
 {
+    LOAD_C,
+    ADDITION_C,
+    SUBTRACTION_C,
+    MULTIPLICATION_C,
+    DIVISION_C,
+    AND_C,
+    OR_C,
+    XOR_C,
+    NOT_C,
     ADDITION,
     SUBTRACTION,
     DIVISION,
@@ -13,13 +22,14 @@ enum opcodes
     XOR,
     NOT,
     LOAD_MEMORY,
-    LOAD_CONSTANT,
     STORE_MEMORY,
+    DELATE_MEMORY,
     JUMP,
     JUMP_CONDITIONAL,
     CALL_FUNCTION,
     RETURN_FUNCTION,
-    PRINT,
+    PRINT_ACCUMULATO,
+    PRINT_MEMORY,
     HALT
 };
 

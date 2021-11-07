@@ -50,12 +50,17 @@ code * read_byte_file(char filename[])
 
     int ii = 0;
     BYTE opcode;
+    BYTE b1, b2;
     int operand;
 
     for (int i = 0; i < program_size; i++) {
-        ii = i*3;
         opcode = buffer[ii];
-        operand = buffer[ii+2] | buffer[ii+1] << 8; //trasfor 2 btyes in int
+        ii++;
+        b1 = buffer[ii];
+        ii++;
+        b2 = buffer[ii];
+        ii++;
+        operand = (b1<< 8) + b2; //trasfor 2 btyes in int
         program[i].opcode = opcode;
         program[i].operand = operand;
         //printf("opcode=%x , operand=%d\n", program[i].opcode, program[i].operand);
@@ -70,13 +75,13 @@ int main( int argc, char *argv[])
     if (argc == 2) {
         code *program;
         program = read_byte_file(argv[1]);
-        /*
+
         billoVM vm;
         init_billoVM(&vm);
 
         run(&vm, program);
 
-        delate_billoVM(&vm);*/
+        delate_billoVM(&vm);
     }
     else
     {

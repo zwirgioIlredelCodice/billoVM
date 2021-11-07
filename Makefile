@@ -12,7 +12,8 @@ build/ht.o: ht.c ht.h
 
 run:
 	@echo running my great billo
-	./build/main
+	./billolang.py two.billo one.bbillo
+	./build/main one.bbillo
 
 clean:
 	rm build/main build/*.o

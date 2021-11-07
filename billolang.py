@@ -40,6 +40,7 @@ CALL_FUNCTION           = 21
 RETURN_FUNCTION         = 22
 PRINT_ACCUMULATOR       = 23
 PRINT_MEMORY            = 24
+HALT                    = 25
 
 #           DECLARING TOKEN 
 #           TYPES
@@ -212,6 +213,7 @@ def instruction_str_to_n(program):
         
         program_n.append(instruction_n(opcode, operand))
 
+    program_n.append(instruction_n(HALT, 0))
     return program_n
 
 # given array of line of token
@@ -308,7 +310,7 @@ def to_bytecode(code):
     size_char = 1 # 1 byte make a c char
     bytecode = b''
     for instruction in code:
-        b_opcode = instruction.opcode.to_bytes(size_char, byteorder='big') #https://docs.python.org/3/library/stdtypes.html#int.to_bytes
+        b_opcode = instruction.opcode.to_bytes(size_char, byteorder='big', signed=False) #https://docs.python.org/3/library/stdtypes.html#int.to_bytes
         b_operand = instruction.operand.to_bytes(size_int, byteorder='big', signed=True)
         bytecode += b_opcode
         bytecode += b_operand

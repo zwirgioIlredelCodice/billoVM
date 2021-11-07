@@ -3,23 +3,23 @@
 #include "billoVM.h"
 #include "ht.h"
 
-/*void debug_billoVM(billoVM *vm)
+void debug_billoVM(billoVM *vm)
 {
 
     printf("accumulator= %d\n", vm->accumulator);
 
     printf("memory= ");
-    for (size_t i = 0; i < MEMORY_SIZE; i++)
+    for (size_t i = 0; i < vm->memory.capacity; i++)
     {
-        printf("%d ", vm->memory[i]);
-    }
-    printf("\nstack= ");
-    for (size_t i = 0; i < CALL_STACK_SIZE; i++)
-    {
-        printf("%d ", vm->call_stack[i]);
+        if (vm->memory.cell[i].empty)
+        {
+            printf("empty ");
+        }
+        
+        printf("%d ", vm->memory.cell[i].value);
     }
     printf("\n");
-}*/
+}
 
 void init_billoVM(billoVM *vm)
 {
@@ -46,36 +46,88 @@ void run(billoVM *vm, code program[])
 
     while (1)
     {
-
         opcode = program[vm->program_counter].opcode;
         operand = program[vm->program_counter].operand;
 
-        value = ht_get(&vm->memory, operand);
-
         switch (opcode)
         {
+        case LOAD_C:
+            vm->accumulator = operand;
+            (vm->program_counter)++;
+            break;
+        
+        case ADDITION_C:
+            vm->accumulator += operand;
+            (vm->program_counter)++;
+            break;
+        
+        case SUBTRACTION_C:
+            vm->accumulator -= operand;
+            (vm->program_counter)++;
+            break;
+        
+        case MULTIPLICATION_C:
+            vm->accumulator *= operand;
+            (vm->program_counter)++;
+            break;
+
+        case DIVISION_C:
+            vm->accumulator /= operand;
+            (vm->program_counter)++;
+            break;
+
+        case AND_C:
+            vm->accumulator &= operand;
+            (vm->program_counter)++;
+            break;
+
+        case OR_C:
+            vm->accumulator |= operand;
+            (vm->program_counter)++;
+            break;
+
+        case XOR_C:
+            vm->accumulator ^= operand;
+            (vm->program_counter)++;
+            break;
+
+        case NOT_C:
+            vm->accumulator = ~vm->accumulator;
+            (vm->program_counter)++;
+            break;
 
         case ADDITION:
+            value = ht_get(&vm->memory, operand);
             vm->accumulator += value;
             (vm->program_counter)++;
             break;
 
         case SUBTRACTION:
+            value = ht_get(&vm->memory, operand);
             vm->accumulator -= value;
             (vm->program_counter)++;
             break;
 
+        case DIVISION:
+            value = ht_get(&vm->memory, operand);
+            vm->accumulator /= value;
+            (vm->program_counter)++;
+            break;
+
         case AND:
+            value = ht_get(&vm->memory, operand);
             vm->accumulator &= value;
             (vm->program_counter)++;
             break;
 
         case OR:
+            value = ht_get(&vm->memory, operand);
             vm->accumulator |= value;
             (vm->program_counter)++;
             break;
 
         case XOR:
+            value = ht_get(&vm->memory, operand);
             vm->accumulator ^= value;
             (vm->program_counter)++;
             break;
@@ -84,51 +136,53 @@ void run(billoVM *vm, code program[])
             vm->accumulator = ~vm->accumulator;
             (vm->program_counter)++;
             break;
-
+        
         case LOAD_MEMORY:
+            value = ht_get(&vm->memory, operand);
             vm->accumulator = value;
             (vm->program_counter)++;
             break;
-
-        case LOAD_CONSTANT:
-            vm->accumulator = operand;
-            (vm->program_counter)++;
-            break;
-
+        
         case STORE_MEMORY:
             ht_set(&vm->memory, operand, vm->accumulator);
             (vm->program_counter)++;
             break;
-
+        
+        case DELATE_MEMORY:
+            ht_delate(&vm->memory, operand);
+            (vm->program_counter)++;
+            break;
+        
         case JUMP:
             vm->program_counter = operand;
             break;
-
+        
         case JUMP_CONDITIONAL:
             if (vm->accumulator == 0)
                 vm->program_counter = operand;
             else
                 (vm->program_counter)++;
             break;
-
+        
         case CALL_FUNCTION:
-            vm->call_stack[vm->call_stack_pointer] = ++(vm->program_counter);
-            (vm->call_stack_pointer)++;
-            vm->program_counter = operand;
             break;
-
+        
         case RETURN_FUNCTION:
-            vm->program_counter = vm->call_stack[--(vm->call_stack_pointer)];
             break;
-
-        case PRINT:
-            printf("%d\n", vm->accumulator);
-            (vm->program_counter)++;
+        
+        case PRINT_ACCUMULATO:
+            printf("%d\n",vm->accumulator); //temp
             break;
-
+        
+        case PRINT_MEMORY:
+            value = ht_get(&vm->memory, operand);
+            printf("%d\n",value); //temp
+            break;
+        
         case HALT:
             return;
         }
-        //debug_billoVM(vm);
+        
+        debug_billoVM(vm);
     }
 }
