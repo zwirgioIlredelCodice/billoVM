@@ -37,7 +37,7 @@ typedef struct billoVM
 
 typedef struct code
 {
-    u_int8_t opcode;
+    unsigned char opcode;
     int operand;
 } code;
 
