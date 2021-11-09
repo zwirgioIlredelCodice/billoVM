@@ -98,6 +98,16 @@ def print_token(token_list_line):
             print("\ttoken[kind = ", tok.kind, ", variable = ", tok.value,"]")
         line_n = line_n + 1
 
+def print_instruction(instruction):
+    for istr in instruction:
+        print(istr.opcode, istr.operand)
+        for pcf in istr.point_control_flow:
+            if pcf.startswith("c@"):
+                print("\tclose block",pcf[2:])
+            elif pcf.startswith("o@"):
+                print("\topen block",pcf[2:])
+            else:
+                print("WARNING strange point_control_flow definition", pcf)
 def tokenize(data):
 
     # split string into token when "\n" " " "\t"
@@ -282,19 +292,19 @@ def traduce(token_list_line):
                 
                 elif len(line_tok) > 1 and line_tok[1].value == "else":
 
-                    control_flow_temp = control_flow_stack.pop()
+                    control_flow_stack.pop()
 
                     control_flow_stack.append(control_flow("else", instruction_n))
                     opcode = "JUMP"
                     operand = "c@"+str(control_flow_stack[-1].position)
                     program.append(Instruction(opcode, operand))
                     instruction_n += 1
-                    program[-1].point_control_flow.append("c@"+str(control_flow_stack[-1].position))
                     program[-1].point_control_flow.append("o@"+str(control_flow_stack[-1].position))
-                    
+                
                 else:
                     program[-1].point_control_flow.append("c@"+str(control_flow_stack[-1].position))
-                    control_flow_stack.pop()
+                    #sas = control_flow_stack.pop() #problem when if close not close his own if block ------------------to fix
+                    #print(sas.kind)
 
         #base case
         else:
@@ -327,5 +337,9 @@ if __name__ == "__main__":
         instruction_n = instruction_str_to_n(instruction)
         bytecode = to_bytecode(instruction_n)
         print_byte_file(file_out, bytecode)
+        if cli_arguments[2] == "debug":
+            print_token(token_list_line)
+            print_instruction(instruction)
+            print(bytecode)
     else:
         print("file name argument is missing -> EXIT")
