@@ -12,7 +12,7 @@ build/ht.o: ht.c ht.h
 
 run:
 	@echo running my great billo
-	./billolang.py two.billo one.bbillo
+	./billolang.py two.billo one.bbillo debug
 	./build/main one.bbillo
 
 clean:

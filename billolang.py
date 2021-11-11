@@ -278,7 +278,21 @@ def traduce(token_list_line):
             operand = "c@"+str(control_flow_stack[-1].position) # is not right todo: after make code all instruction change @.. value with right ones
             program.append(Instruction(opcode, operand))
             instruction_n += 1
+        
+        elif keyword_startline == "else":
+            control_flow_stack.append(control_flow("if", instruction_n))
+            
+            opcode = "JUMP"
+            operand = "c@"+str(control_flow_stack[-1].position)
     
+            program.append(Instruction(opcode, operand))
+            instruction_n += 1
+
+            program[-1].point_control_flow.append("c@"+str(control_flow_stack[-2].position))
+            program[-1].point_control_flow.append("o@"+str(control_flow_stack[-1].position))
+
+            control_flow_stack.pop(-2)
+
         elif keyword_startline == "end":
 
                 if control_flow_stack[-1].kind == "while":
@@ -289,21 +303,10 @@ def traduce(token_list_line):
                     program[-1].point_control_flow.append("c@"+str(control_flow_stack[-1].position))
 
                     control_flow_stack.pop()
-                
-                elif len(line_tok) > 1 and line_tok[1].value == "else":
 
-                    control_flow_stack.pop()
-
-                    control_flow_stack.append(control_flow("else", instruction_n))
-                    opcode = "JUMP"
-                    operand = "c@"+str(control_flow_stack[-1].position)
-                    program.append(Instruction(opcode, operand))
-                    instruction_n += 1
-                    program[-1].point_control_flow.append("o@"+str(control_flow_stack[-1].position))
-                
                 else:
                     program[-1].point_control_flow.append("c@"+str(control_flow_stack[-1].position))
-                    #sas = control_flow_stack.pop() #problem when if close not close his own if block ------------------to fix
+                    control_flow_stack.pop() #problem when if close not close his own if block ------------------to fix
                     #print(sas.kind)
 
         #base case

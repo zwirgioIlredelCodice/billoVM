@@ -7,7 +7,7 @@ void debug_billoVM(billoVM *vm)
 {
 
     printf("accumulator= %d\n", vm->accumulator);
-
+    /*
     printf("memory= ");
     for (size_t i = 0; i < vm->memory.capacity; i++)
     {
@@ -19,6 +19,7 @@ void debug_billoVM(billoVM *vm)
         printf("%d ", vm->memory.cell[i].value);
     }
     printf("\n");
+    */
 }
 
 void init_billoVM(billoVM *vm)
@@ -155,11 +156,14 @@ void run(billoVM *vm, code program[])
         
         case JUMP:
             vm->program_counter = operand;
+            (vm->program_counter)++;
             break;
         
         case JUMP_CONDITIONAL:
-            if (vm->accumulator == 0)
+            if (vm->accumulator == 0) {
                 vm->program_counter = operand;
+                (vm->program_counter)++;
+            }
             else
                 (vm->program_counter)++;
             break;

@@ -1,6 +1,9 @@
 0 ->
-if -> 1 -> do ->
+if -> 0 -> do ->
     666 ->
-end else ->
+else ->
     777 ->
+end ->
+if -> 1 -> do ->
+    555 ->
 end ->
