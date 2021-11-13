@@ -45,13 +45,13 @@ code * read_byte_file(char filename[])
     fclose(pFile);
 
     static code *program;
-    size_t program_size = lSize / 3; // 1 byte for opcode, 2 bytes for operand
+    size_t program_size = lSize / 5; // 1 byte for opcode, 4 bytes for operand
     program = (code *)malloc(sizeof(code) * program_size);
 
     int ii = 0;
     BYTE opcode;
-    BYTE b1, b2;
-    int operand;
+    BYTE b1, b2, b3, b4;
+    short operand;
 
     for (int i = 0; i < program_size; i++) {
         opcode = buffer[ii];
@@ -60,7 +60,11 @@ code * read_byte_file(char filename[])
         ii++;
         b2 = buffer[ii];
         ii++;
-        operand = (b1<< 8) + b2; //trasfor 2 btyes in int
+        b3 = buffer[ii];
+        ii++;
+        b4 = buffer[ii];
+        ii++;
+        operand = (b1<<24) + (b2<<16) + (b3<<8) + b4; //trasfor 4 btyes in int
         program[i].opcode = opcode;
         program[i].operand = operand;
         //printf("opcode=%x , operand=%d\n", program[i].opcode, program[i].operand);

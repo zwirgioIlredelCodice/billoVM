@@ -319,7 +319,7 @@ def traduce(token_list_line):
         
 
 def to_bytecode(code):
-    size_int = 2 # 2 byte make a c int
+    size_int = 4 # 4 byte make a c int
     size_char = 1 # 1 byte make a c char
     bytecode = b''
     for instruction in code:
