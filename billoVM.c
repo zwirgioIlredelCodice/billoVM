@@ -174,19 +174,21 @@ void run(billoVM *vm, code program[])
         case RETURN_FUNCTION:
             break;
         
-        case PRINT_ACCUMULATO:
-            printf("%d\n",vm->accumulator); //temp
+        case PRINT_ACCUMULATOR:
+            printf("%c",vm->accumulator); //temp
+            (vm->program_counter)++;
             break;
         
         case PRINT_MEMORY:
             value = ht_get(&vm->memory, operand);
             printf("%d\n",value); //temp
+            (vm->program_counter)++;
             break;
         
         case HALT:
             return;
         }
         
-        debug_billoVM(vm);
+        //debug_billoVM(vm);
     }
 }

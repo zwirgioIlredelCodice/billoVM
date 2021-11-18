@@ -44,8 +44,9 @@ HALT                    = 25
 
 #           DECLARING TOKEN 
 #           TYPES
-keyword = ["var", "if"]
+keyword = ["if", "do", "else", "end"]
 operation = ["+", "-", "*", "/", "and", "or", "xor", "not"]
+sys_call = ["output", "input"]
 arrow = "->"
 
 #           DECLARING CLASSES
@@ -128,6 +129,9 @@ def tokenize(data):
 
         elif value in operation:
             kind = "t_operation"
+
+        elif value in sys_call:
+            kind = "t_sys_call"
 
         else:
             kind = "t_?"
@@ -225,6 +229,7 @@ def instruction_str_to_n(program):
 
     program_n.append(instruction_n(HALT, 0))
     return program_n
+    
 
 # given array of line of token
 #
@@ -261,6 +266,12 @@ def traduce(token_list_line):
                 program.append(Instruction(opcode, tok.value))
 
                 instruction_n += 1
+        
+        elif keyword_startline == "output":
+            opcode = "PRINT_ACCUMULATOR"
+            operand = "0"
+            program.append(Instruction(opcode, operand))
+            instruction_n += 1
 
         elif keyword_startline == "if":
 
@@ -340,7 +351,7 @@ if __name__ == "__main__":
         instruction_n = instruction_str_to_n(instruction)
         bytecode = to_bytecode(instruction_n)
         print_byte_file(file_out, bytecode)
-        if cli_arguments[2] == "debug":
+        if "debug" in cli_arguments:
             print_token(token_list_line)
             print_instruction(instruction)
             print(bytecode)
