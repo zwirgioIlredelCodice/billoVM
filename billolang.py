@@ -121,6 +121,9 @@ def tokenize(data):
         if value.isdigit():
             kind = "t_number"
 
+        elif value.startswith("&"):
+            kind = "t_variable"
+
         elif value in keyword:
             kind = "t_keyword"
 
